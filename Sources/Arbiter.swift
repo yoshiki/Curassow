@@ -115,7 +115,9 @@ public final class Arbiter<Worker : WorkerType> {
       timeout = timeval(tv_sec: 30, tv_usec: 0)
     }
 
-    let result = try? select(reads: [signalHandler.pipe.read], timeout: timeout)
+    let writes = [Socket]()
+    let errors = [Socket]()
+    let result = try? fdselect(reads: [signalHandler.pipe.read], writes: writes, errors: errors, timeout: Optional<timeval>(timeout))
     let read = result?.reads ?? []
 
     if !read.isEmpty {

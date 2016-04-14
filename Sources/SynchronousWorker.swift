@@ -121,7 +121,10 @@ public final class SynchronousWorker : WorkerType {
       timeout = timeval(tv_sec: 120, tv_usec: 0)
     }
 
-    let result = try? select(reads: listeners + [sharedHandler!.pipe.read], timeout: timeout)
+    let reads = listeners + [sharedHandler!.pipe.read]
+    let writes = [Socket]()
+    let errors = [Socket]()
+    let result = try? fdselect(reads: reads, writes: writes, errors: errors, timeout: Optional<timeval>(timeout))
     return result?.reads ?? []
   }
 

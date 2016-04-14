@@ -8,7 +8,7 @@ import Nest
 import Inquiline
 
 
-enum HTTPParserError : ErrorType {
+enum HTTPParserError : ErrorProtocol {
   case BadSyntax(String)
   case BadVersion(String)
   case Incomplete
@@ -69,7 +69,7 @@ class HTTPParser {
       throw HTTPParserError.Incomplete
     }
 
-    if let headers = String.fromCString(buffer + [0]) {
+    if let headers = String(validatingUTF8: buffer + [0]) {
       return headers
     }
 
@@ -96,7 +96,7 @@ class HTTPParser {
     }
 
     let headers = parseHeaders(components)
-    let contentSize = headers.filter { $0.0.lowercaseString == "content-length" }.flatMap { Int($0.1) }.first
+    let contentSize = headers.filter { $0.0.lowercased() == "content-length" }.flatMap { Int($0.1) }.first
     let payload = ReaderPayload(reader: reader, contentSize: contentSize)
     return Request(method: method, path: path, headers: headers, content: payload)
   }
@@ -117,13 +117,13 @@ class HTTPParser {
 }
 
 
-extension CollectionType where Generator.Element == CChar {
+extension Collection where Iterator.Element == CChar {
   func find(characters: [CChar]) -> ([CChar], [CChar])? {
     var lhs: [CChar] = []
     var rhs = Array(self)
 
     while !rhs.isEmpty {
-      let character = rhs.removeAtIndex(0)
+      let character = rhs.remove(at: 0)
       lhs.append(character)
       if lhs.hasSuffix(characters) {
         return (lhs, rhs)
@@ -186,7 +186,7 @@ class Scanner {
       characters.append(character)
 
       if content.hasPrefix(until) {
-        let index = content.characters.startIndex.advancedBy(until.characters.count)
+        let index = content.characters.startIndex.advanced(by: until.characters.count)
         content = String(content.characters[index..<content.characters.endIndex])
         break
       }
@@ -208,7 +208,7 @@ extension String {
     }
 
     for idx in 0..<prefixCharacters.count {
-      if characters[start.advancedBy(idx)] != prefixCharacters[prefixStart.advancedBy(idx)] {
+        if characters[start.advanced(by: idx)] != prefixCharacters[prefixStart.advanced(by: idx)] {
         return false
       }
     }
@@ -218,7 +218,7 @@ extension String {
 }
 
 
-class ReaderPayload : PayloadType, PayloadConvertible, GeneratorType {
+class ReaderPayload : PayloadType, PayloadConvertible, IteratorProtocol {
   let reader: Readable
   var buffer: [UInt8] = []
   let bufferSize: Int = 8192

@@ -58,10 +58,10 @@ extension Address : ArgumentConvertible {
   public init(parser: ArgumentParser) throws {
     if let value = parser.shift() {
       if value.hasPrefix("unix:") {
-        let prefixEnd = value.startIndex.advancedBy(5)
+        let prefixEnd = value.startIndex.advanced(by: 5)
         self = .UNIX(path: value[prefixEnd ..< value.endIndex])
       } else {
-        let components = value.characters.split(":").map(String.init)
+        let components = value.characters.split(separator: ":").map(String.init)
         if components.count != 2 {
           throw ArgumentError.InvalidType(value: value, type: "hostname and port separated by `:`.", argument: nil)
         }

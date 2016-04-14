@@ -33,7 +33,7 @@ private let system_pipe = Darwin.pipe
 import fd
 
 
-struct SocketError : ErrorType, CustomStringConvertible {
+struct SocketError : ErrorProtocol, CustomStringConvertible {
   let function: String
   let number: Int32
 

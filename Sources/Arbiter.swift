@@ -161,7 +161,7 @@ public final class Arbiter<Worker : WorkerType> {
         break
       }
 
-      workers.removeValueForKey(pid)
+      workers.removeValue(forKey: pid)
     }
 
     manageWorkers()
@@ -198,7 +198,7 @@ public final class Arbiter<Worker : WorkerType> {
       if lastUpdate >= configuration.timeout {
         if worker.aborted {
           if kill(pid, SIGKILL) == ESRCH {
-            workers.removeValueForKey(pid)
+            workers.removeValue(forKey: pid)
           }
         } else {
           worker.aborted = true
@@ -206,7 +206,7 @@ public final class Arbiter<Worker : WorkerType> {
           logger.critical("Worker timeout (pid: \(pid))")
 
           if kill(pid, SIGABRT) == ESRCH {
-            workers.removeValueForKey(pid)
+            workers.removeValue(forKey: pid)
           }
         }
       }

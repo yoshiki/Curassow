@@ -50,7 +50,7 @@ final class WorkerProcess {
 func getenv(key: String, `default`: String) -> String {
   let result = getenv(key)
   if result != nil {
-    if let value = String.fromCString(result) {
+    if let value = String(validatingUTF8: result) {
       return value
     }
   }

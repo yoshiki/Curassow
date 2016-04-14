@@ -59,7 +59,7 @@ class MultiOption<T : ArgumentConvertible> : ArgumentDescriptor {
 func getIntEnv(key: String, `default`: Int) -> Int {
   let value = getenv(key)
   if value != nil {
-    if let stringValue = String.fromCString(value), intValue = Int(stringValue) {
+    if let stringValue = String(validatingUTF8: value), intValue = Int(stringValue) {
       return intValue
     }
   }
@@ -68,7 +68,7 @@ func getIntEnv(key: String, `default`: Int) -> Int {
 }
 
 
-struct ServeError : ErrorType, CustomStringConvertible {
+struct ServeError : ErrorProtocol, CustomStringConvertible {
   let description: String
 
   init(_ description: String) {
